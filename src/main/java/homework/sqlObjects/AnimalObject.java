@@ -1,6 +1,6 @@
 package homework.sqlObjects;
 
-public abstract class AnimalObject {
+public abstract class AnimalObject implements iObjectDB {
     private int id;
     private String type, name, color;
     private int weight, age;

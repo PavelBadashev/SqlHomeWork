@@ -25,7 +25,6 @@ public class App {
 
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             //Создание запроса
-//            Statement stmt = conn.createStatement(); // Подготовился к обращению в БД
             Scanner scanner = new Scanner(System.in); // Включил сканнер
 
             AnimalTable animalTable = new AnimalTable();

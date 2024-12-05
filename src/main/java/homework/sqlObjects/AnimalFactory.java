@@ -1,14 +1,13 @@
 package homework.sqlObjects;
 
 import homework.data.AnimalEnum;
+import homework.data.BooleanEnum;
 import homework.sqlObjects.birds.Duck;
 import homework.sqlTables.AnimalTable;
 import homework.validator.ScannerValidator;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.sql.SQLException;
+import java.util.*;
 
 public class AnimalFactory {
     private final Scanner scanner;
@@ -19,12 +18,11 @@ public class AnimalFactory {
         this.animalTable = table;
     }
 
-    public Map<String, String> generateAnimalInfo(Scanner scanner) {
+    public Map<String, String> generateAnimalInfo() {
         ScannerValidator validator = new ScannerValidator(scanner);
 
         Map<String, String> animalInfo = new HashMap<>();
 
-        // Ввод основных атрибутов животного
         System.out.print("Введите кличку животного: ");
         animalInfo.put("name", validator.inputString());
 
@@ -49,12 +47,12 @@ public class AnimalFactory {
         try {
             // Генерация данных о животном (опрос)
             AnimalEnum animalTypeCommand = AnimalEnum.fromString(inputLineAnimal);
-            Map<String, String> animalInfo = generateAnimalInfo(scanner);
+            Map<String, String> animalInfo = generateAnimalInfo();
 
             // Запись сгенерированных данных о животном
             String inputAnimalName = animalInfo.get("name");
-            Integer inputAnimalAge = Integer.parseInt(animalInfo.get("age"));
-            Integer inputAnimalWeight = Integer.parseInt(animalInfo.get("weight"));
+            int inputAnimalAge = Integer.parseInt(animalInfo.get("age"));
+            int inputAnimalWeight = Integer.parseInt(animalInfo.get("weight"));
             String inputAnimalColor = animalInfo.get("color");
 
             switch (animalTypeCommand) {
@@ -104,5 +102,61 @@ public class AnimalFactory {
             System.out.println("Ошибка ввода информации о животном. Необходимо ввести значение из списка.");
             return createAnimal();
         }
+    }
+
+    public void getListOfAnimal() {
+        try {
+            ScannerValidator validator = new ScannerValidator(scanner);
+
+            System.out.println("Требуется ли фильтровать животных по фильтру? (Y/N)");
+
+            String filterType = validator.inputString();
+            BooleanEnum booleanEnum = BooleanEnum.fromString(filterType);
+            switch (booleanEnum) {
+                case Y:
+                    System.out.print("Введите тип по которому будете фильтровать: ");
+                    AnimalEnum animalTypeCommand = AnimalEnum.fromString(validator.inputString());
+                    animalTable.print(animalTable.getByType(animalTypeCommand.toString()));
+                    break;
+                case N:
+                    animalTable.read();
+                    break;
+            }
+        } catch (IllegalArgumentException | SQLException e) {
+            System.out.println("Ошибка ввода информации о животном. Необходимо ввести значение из списка.");
+            getListOfAnimal();
+        }
+    }
+
+    public void editAnimal() {
+        try {
+            ScannerValidator validator = new ScannerValidator(scanner);
+
+            System.out.print("Введите идентификатор (id)  животного, которого хотите изменить: ");
+            Integer animalId = validator.inputNumber();
+
+            if (!animalTable.getById(animalId).next()) {
+                System.out.println("Введен не существующий идентификатор животного");
+                editAnimal();
+            }
+
+            System.out.println("Введите обновленный набор данных:");
+            Map<String, String> newAnimalInfo = generateAnimalInfo();
+
+            animalTable.update(
+                    animalId,
+                    newAnimalInfo.get("name"),
+                    Integer.parseInt(newAnimalInfo.get("age")),
+                    Integer.parseInt(newAnimalInfo.get("weight")),
+                    newAnimalInfo.get("color")
+            );
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при вводе идентификатора животного");
+            editAnimal();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

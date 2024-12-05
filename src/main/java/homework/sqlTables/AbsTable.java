@@ -38,4 +38,8 @@ public abstract class AbsTable implements ITable {
         return dbConnector.executeQuery(String.format("SELECT * FROM %s WHERE id = %s;", this.tableName, id));
     }
 
+    public ResultSet getByType(String type) {
+        return dbConnector.executeQuery(String.format("SELECT * FROM %s WHERE type = '%s';", this.tableName, type));
+    }
+
 }

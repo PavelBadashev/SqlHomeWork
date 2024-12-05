@@ -4,7 +4,6 @@ import homework.sqlObjects.AnimalObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class AnimalTable extends AbsTable {
     private static final String NAME = "animals";
@@ -30,19 +29,16 @@ public class AnimalTable extends AbsTable {
     }
 
     // Создаем новые записи (животных)
-    public void update(AnimalObject animalObject) {
-        this.dbConnector.execute(
-                // Изменять тип животного не логично, поэтому такой возможности нет в методе update
-                String.format(
-                        "UPDATE %s SET COLOR = '%s', NAME = '%s', WEIGHT = '%s', AGE = '%s' WHERE ID = '%s';",
-                        NAME,
-                        animalObject.getColor(),
-                        animalObject.getName(),
-                        animalObject.getWeight(),
-                        animalObject.getAge(),
-                        animalObject.getId()
-                )
-        );
+    public void update(Integer id, String name, Integer age, Integer weight, String color) {
+        this.dbConnector.execute(String.format(
+                "UPDATE %s SET COLOR = '%s', NAME = '%s', WEIGHT = '%s', AGE = '%s' WHERE ID = '%s';",
+                NAME,
+                color,
+                name,
+                weight,
+                age,
+                id
+        ));
     }
 
     public void print(ResultSet rs) throws SQLException {
@@ -60,48 +56,22 @@ public class AnimalTable extends AbsTable {
                     rs.getString("type"),
                     rs.getInt("age"));
         }
+        System.out.println('\n');
     }
 
-    public ArrayList<AnimalObject> read() throws SQLException {
-        ArrayList<AnimalObject> animalObjectList = new ArrayList<>();
+    public void read() throws SQLException {
         ResultSet resultSet;
 
         resultSet = selectAll();
-
-        while (resultSet.next()) {
-            int id = resultSet.getInt("ID");
-            String color = resultSet.getString("COLOR");
-            String name = resultSet.getString("NAME");
-            int weight = resultSet.getInt("WEIGHT");
-            String type = resultSet.getString("TYPE");
-            int age = resultSet.getInt("AGE");
-
-            AnimalObject animal = new AnimalObject(id, color, name, weight, type, age);
-            animalObjectList.add(animal);
-        }
-
-        return animalObjectList;
+        print(resultSet);
     }
 
-    public AnimalObject read(Integer id) throws SQLException {
+    public ResultSet read(Integer id) throws SQLException {
         try {
             ResultSet resultSet = getById(id);
-
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString(1));
-                String color = resultSet.getString("COLOR");
-                String name = resultSet.getString("NAME");
-                int weight = resultSet.getInt("WEIGHT");
-                String type = resultSet.getString("TYPE");
-                int age = resultSet.getInt("AGE");
-
-                return new AnimalObject(id, color, name, weight, type, age);
-
-            }
-        }
-        catch (Exception ex) {
+            return resultSet;
+        } catch (Exception ex) {
             throw ex;
         }
-        return null;
     }
 }

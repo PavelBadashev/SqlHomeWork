@@ -2,10 +2,8 @@ package homework.commands;
 
 import homework.data.CommandEnum;
 import homework.sqlObjects.AnimalFactory;
-import homework.sqlObjects.AnimalObject;
 import homework.sqlTables.AnimalTable;
 
-import java.sql.SQLException;
 import java.util.*;
 
 public class Commands {
@@ -30,31 +28,16 @@ public class Commands {
 
             switch (commandEnum) {
                 case ADD:
-                    AnimalObject newAnimal = animalFactory.createAnimal();
-//                    animalTable.insert(new AbsAnimalObject(newAnimal));
+                    animalFactory.createAnimal();
                     break;
 
                 case LIST:
-                    animalTable.print(animalTable.selectAll());
+                    animalFactory.getListOfAnimal();
                     break;
 
                 case EDIT:
-                    animalTable.print(animalTable.selectAll());
-
-                    System.out.print("Введите идентификатор (id)  животного, которого хотите изменить: ");
-                    Integer animalId = scanner.nextInt();
-                    AnimalObject choosenAnimal = animalTable.read(animalId);
-
-                    System.out.println("Введите обновленный набор данных");
-                    Map<String, String> newAnimalInfo = animalFactory.generateAnimalInfo(scanner);
-
-                    choosenAnimal.setAge(Integer.parseInt(newAnimalInfo.get("age")));
-                    choosenAnimal.setWeight(Integer.parseInt(newAnimalInfo.get("weight")));
-                    choosenAnimal.setColor(newAnimalInfo.get("color"));
-                    choosenAnimal.setName(newAnimalInfo.get("name"));
-
-                    animalTable.update(choosenAnimal);
-
+                    animalFactory.editAnimal();
+                    break;
 
                 case EXIT:
                     System.exit(0);
@@ -62,8 +45,6 @@ public class Commands {
         } catch (IllegalArgumentException e) {
             System.out.println("\nОшибка ввода комманды. Не обходимо ввести значение из списка.");
             this.executeCommand();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 }

@@ -23,13 +23,11 @@ public class ScannerValidator {
 
     public String inputString(){
         try {
-//            System.out.println(scanner.nextLine());
-            String name = scanner.nextLine();
-            validateString(name);
-            return name;
+            String str = scanner.nextLine();
+            validateString(str);
+            return str;
         }
         catch (IllegalArgumentException e) {
-            System.out.println(e);
             System.out.println("Ошибка ввода информации о животном. Необходимо ввести строку.");
             return inputString();
         }
